@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://my-api-backend.ajjh564356165649.workers.dev';
 
 interface RequestOptions {
   method?: string;
