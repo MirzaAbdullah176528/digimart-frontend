@@ -80,6 +80,23 @@ export default function UserPage() {
     }
   };
 
+  const handleDeleteSession = async (sessionId: string) => {
+    try {
+      const res = await fetch(`${BASE_URL}/sessions/expire`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ id: sessionId, status: 0 }),
+      });
+      if (res.ok) {
+        setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, active: 0 } : s));
+      }
+    } catch (err) {
+    }
+  };
+
   const handleBack = () => {
     setView('users');
     setSessions([]);
@@ -149,6 +166,7 @@ export default function UserPage() {
               <th style={{ border: '1px solid black', padding: '8px', textAlign: 'left', backgroundColor: '#f8f8f8' }}>Products Added</th>
               <th style={{ border: '1px solid black', padding: '8px', textAlign: 'left', backgroundColor: '#f8f8f8' }}>Products Updated</th>
               <th style={{ border: '1px solid black', padding: '8px', textAlign: 'left', backgroundColor: '#f8f8f8' }}>IP Address</th>
+              <th style={{ border: '1px solid black', padding: '8px', textAlign: 'left', backgroundColor: '#f8f8f8' }}>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -166,11 +184,18 @@ export default function UserPage() {
                   <td style={{ border: '1px solid black', padding: '8px' }}>{session.products_added}</td>
                   <td style={{ border: '1px solid black', padding: '8px' }}>{session.products_updated}</td>
                   <td style={{ border: '1px solid black', padding: '8px' }}>{session.ipAddress || 'N/A'}</td>
+                  <td style={{ border: '1px solid black', padding: '8px' }}>
+                    {session.active === 1 && (
+                      <button onClick={() => handleDeleteSession(session.id)} style={{ padding: '4px 8px', cursor: 'pointer', border: '1px solid black', backgroundColor: '#ffe6e6', color: 'red' }}>
+                        Delete
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={11} style={{ border: '1px solid black', padding: '8px', textAlign: 'center' }}>No sessions found for this user.</td>
+                <td colSpan={12} style={{ border: '1px solid black', padding: '8px', textAlign: 'center' }}>No sessions found for this user.</td>
               </tr>
             )}
           </tbody>
