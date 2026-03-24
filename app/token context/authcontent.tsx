@@ -36,7 +36,7 @@ function decodeToken(token: string): User | null {
   }
 }
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+const   AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -64,22 +64,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           method: 'POST',
           credentials: 'include',
         });
-
+        console.log('refresh response status:', res.status)
         if (res.ok) {
           const data = await res.json();
           const token: string = data.accessToken;
           tokenRef.current = token;
+          console.log('token received:', !!data.accessToken);
           setAccessToken(token);
           setUser(decodeToken(token));
+          setIsLoading(false);
+        } else {
+          tokenRef.current = null;
+          console.log('refresh failed — not ok');
+          setAccessToken(null);
+          setUser(null);
+          setIsLoading(false);
         }
+
+        
       } catch {
-      } finally {
+        tokenRef.current = null;
+        setAccessToken(null);
+        setUser(null);
         setIsLoading(false);
       }
     };
 
     restoreSession();
   }, []);
+
+  useEffect(() => {
+  console.log('Guard fired — isLoading:', isLoading, '| accessToken:', accessToken);
+  if (isLoading) return;
+  if (!accessToken) {
+    router.push('/login');
+  }
+}, [isLoading, accessToken, router]);
 
   const getToken = useCallback(() => tokenRef.current, []);
 

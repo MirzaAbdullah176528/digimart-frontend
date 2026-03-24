@@ -77,6 +77,11 @@ export function createApiService({ getToken, setToken }: ApiServiceDeps) {
     login: (credentials: any) => request('/auth/login', { method: 'POST', body: credentials }),
     signup: (userData: any) => request('/auth/sign-up', { method: 'POST', body: userData }),
     getProducts: () => request('/products', { method: 'GET' }),
-    logOut: () => request('/auth/logout', {method: 'POST'})
+    logOut: () => request('/auth/logout', {method: 'POST'}),
+    
+    
+    getUsers: () => request('/sessions/users', { method: 'GET' }),
+    getUserSessions: (userId: string) => request('/sessions/search-user', { method: 'POST', body: { user_id: userId } }),
+    expireSession: (sessionId: string) => request('/sessions/expire', { method: 'PATCH', body: { id: sessionId, status: 0 } })
   };
 }

@@ -231,9 +231,12 @@ export default function ProductsPage() {
 
   if (authLoading || loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#000000' }}>
-        <CircularProgress sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
-      </Box>
+      <div className="flex justify-center items-center min-h-screen bg-[#050505]">
+        <div className="relative flex justify-center items-center">
+          <div className="absolute animate-ping w-16 h-16 rounded-full bg-indigo-500/20"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 z-10"></div>
+        </div>
+      </div>
     );
   }
 
