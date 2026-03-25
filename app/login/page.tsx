@@ -98,8 +98,8 @@ const LoginPage = ({
     const isSignup = apiUrl.includes('sign-up');
 
     const [formData, setFormData] = useState({
-        username: '',
-        password: '',
+        username: 'abdullah',
+        password: '123456',
         email: '',
         role: 'buyer'
     });
