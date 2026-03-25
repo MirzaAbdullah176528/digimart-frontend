@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiUser, FiEye, FiEyeOff, FiLock, FiArrowRight, FiLayers } from 'react-icons/fi';
+import { FiUser, FiEye, FiEyeOff, FiLock, FiArrowRight, FiLayers, FiShoppingBag, FiTag } from 'react-icons/fi';
 import { createApiService } from '@/service/api';
 import { useAuth } from '../token context/authcontent';
 import {
@@ -14,11 +14,9 @@ import {
     IconButton,
     Alert,
     InputAdornment,
-    Radio,
 } from '@mui/material';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { FiShoppingBag, FiTag } from 'react-icons/fi';
 
 type Props = {
     headerText?: string;
@@ -103,7 +101,7 @@ const LoginPage = ({
         username: '',
         password: '',
         email: '',
-        role:'buyer'
+        role: 'buyer'
     });
 
     useEffect(() => {
@@ -134,8 +132,13 @@ const LoginPage = ({
         e.preventDefault();
         setError('');
 
-        if (formData.password.length < 6 || formData.username.length < 6) {
-            setError('Username and password must both be at least 6 characters');
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters');
+            return;
+        }
+
+        if (isSignup && formData.username.length < 6) {
+            setError('Username must be at least 6 characters');
             return;
         }
 
@@ -147,7 +150,14 @@ const LoginPage = ({
                 await api.signup(formData);
                 triggerExitAnimationAndNavigate('/login');
             } else {
-                await login(formData);
+                const isEmail = formData.username.includes('@');
+                const loginData = {
+                    username: isEmail ? '' : formData.username,
+                    email: isEmail ? formData.username : '',
+                    password: formData.password,
+                    role: formData.role
+                };
+                await login(loginData);
                 triggerExitAnimationAndNavigate('/');
             }
         } catch (err: unknown) {
@@ -159,11 +169,6 @@ const LoginPage = ({
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        console.log(formData);
-        
-    }, [formData])
 
     return (
         <Box sx={{
@@ -232,11 +237,11 @@ const LoginPage = ({
                             )}
 
                             <Box component="form" onSubmit={handleSubmit} sx={{ display: 'grid', gap: '50px' }}>
-                                <Stack direction={'row'} gap="10px">
+                                <Stack direction={isSignup ? 'row' : 'column'} gap="10px">
                                     <TextField
                                         type="text"
                                         name="username"
-                                        placeholder="Enter your username"
+                                        placeholder={isSignup ? "Enter your username" : "Enter username or email"}
                                         value={formData.username}
                                         onChange={handleChange}
                                         required
@@ -265,37 +270,39 @@ const LoginPage = ({
                                         }}
                                     />
 
-                                    <TextField
-                                        type="email"
-                                        name="email"
-                                        placeholder="Enter your email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <FiUser color="#8b949e" size={18} />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                        sx={{
-                                            '& .MuiOutlinedInput-root': {
-                                                borderRadius: '12px',
-                                                color: 'white',
-                                                fontSize: '0.95rem',
-                                                borderTop: 'none',
-                                                '& fieldset': {
-                                                    boxShadow: '0 5px 3px -2px rgb(160, 170, 178)',
+                                    {isSignup && (
+                                        <TextField
+                                            type="email"
+                                            name="email"
+                                            placeholder="Enter your email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <FiUser color="#8b949e" size={18} />
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: '12px',
+                                                    color: 'white',
+                                                    fontSize: '0.95rem',
                                                     borderTop: 'none',
-                                                    borderLeft: 'none',
-                                                    borderRight: 'none',
-                                                    borderRadius: 0,
+                                                    '& fieldset': {
+                                                        boxShadow: '0 5px 3px -2px rgb(160, 170, 178)',
+                                                        borderTop: 'none',
+                                                        borderLeft: 'none',
+                                                        borderRight: 'none',
+                                                        borderRadius: 0,
+                                                    },
                                                 },
-                                            },
-                                            '& input::placeholder': { color: '#8b949e', opacity: 1 },
-                                        }}
-                                    />
+                                                '& input::placeholder': { color: '#8b949e', opacity: 1 },
+                                            }}
+                                        />
+                                    )}
                                 </Stack>
 
                                 <Stack gap="20px">
@@ -344,11 +351,11 @@ const LoginPage = ({
                                         }}
                                     />
                                 
-                                {isSignup && (
-                                    <RoleToggle
-                                        value={formData.role}
-                                        onChange={(val) => setFormData({ ...formData, role: val })}
-                                    />
+                                    {isSignup && (
+                                        <RoleToggle
+                                            value={formData.role}
+                                            onChange={(val) => setFormData({ ...formData, role: val })}
+                                        />
                                     )}
                                 </Stack>
 

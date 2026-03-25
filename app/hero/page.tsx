@@ -131,6 +131,7 @@ const HeroSection: React.FC = () => {
                 Datasets for ML models
               </Typography>
             </NextLink>
+            
           </Stack>
 
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
@@ -258,7 +259,7 @@ const HeroSection: React.FC = () => {
             >
               <Box
                 component="img"
-                src="/IA.webp"
+                src="/download (9).webp"
                 alt="Mobile Application"
                 sx={{
                   width: '100%',
